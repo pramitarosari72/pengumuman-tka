@@ -1,39 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-<title>Pengumuman TKA</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pengumuman Hasil TKA</title>
 
 <style>
 
 body{
-font-family:Arial;
+font-family:Arial, sans-serif;
 background:#0f172a;
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
+min-height:100vh;
 margin:0;
+padding:20px;
 }
 
 .container{
 background:white;
 padding:30px;
 border-radius:20px;
-width:90%;
+width:100%;
 max-width:500px;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
 }
 
 h1{
 text-align:center;
 color:#1e3a8a;
+margin-bottom:20px;
 }
 
 input{
 width:100%;
 padding:15px;
-margin-top:20px;
 border-radius:10px;
 border:1px solid #ccc;
+font-size:16px;
+box-sizing:border-box;
 }
 
 button{
@@ -44,7 +51,12 @@ background:#2563eb;
 color:white;
 border:none;
 border-radius:10px;
+font-size:16px;
 cursor:pointer;
+}
+
+button:hover{
+background:#1d4ed8;
 }
 
 .result{
@@ -53,21 +65,29 @@ padding:20px;
 background:#f3f4f6;
 border-radius:10px;
 display:none;
+line-height:1.8;
+}
+
+.error{
+margin-top:15px;
+color:red;
+text-align:center;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>Pengumuman Hasil TKA</h1>
+<h1>Pengumuman Hasil TKA 2026</h1>
 
 <input type="text" id="nomor" placeholder="Masukkan Nomor Peserta">
 
-<button onclick="cek()">Lihat Hasil</button>
+<button id="btnCari">Lihat Hasil</button>
+
+<div class="error" id="error"></div>
 
 <div class="result" id="hasil"></div>
 
@@ -77,34 +97,59 @@ display:none;
 
 const API_URL = "https://script.google.com/macros/s/AKfycbyhYNPw3VhzM-opuetr0AJi6NTLLVozmWdgJO_9ZpEBOKZjUMCB8j485MxfjWqiKTkB/exec";
 
-async function cek(){
+document.getElementById("btnCari").addEventListener("click", cekData);
 
-const nomor = document.getElementById("nomor").value;
+async function cekData(){
 
-const response = await fetch(`${API_URL}?nomor=${nomor}`);
-
-const data = await response.json();
+const nomor = document.getElementById("nomor").value.trim();
 
 const hasil = document.getElementById("hasil");
 
+const error = document.getElementById("error");
+
+hasil.style.display = "none";
+error.innerHTML = "";
+
+if(nomor === ""){
+error.innerHTML = "Nomor peserta wajib diisi";
+return;
+}
+
+try{
+
+const response = await fetch(API_URL + "?nomor=" + encodeURIComponent(nomor));
+
+const data = await response.json();
+
 if(data.found){
 
-hasil.style.display = "block";
-
 hasil.innerHTML = `
-<h3>${data.nama}</h3>
-<p>Nomor Peserta: ${data.nomor}</p>
-<p>Nilai Matematika: ${data.matematika}</p>
-<p>Nilai Bahasa Indonesia: ${data.bahasa_indonesia}</p>
+<b>Nama Peserta:</b><br>
+${data.nama}<br><br>
+
+<b>Nomor Peserta:</b><br>
+${data.nomor}<br><br>
+
+<b>Nilai Matematika:</b><br>
+${data.matematika}<br><br>
+
+<b>Nilai Bahasa Indonesia:</b><br>
+${data.bahasa_indonesia}
 `;
+
+hasil.style.display = "block";
 
 }else{
 
-hasil.style.display = "block";
+error.innerHTML = "Nomor peserta tidak ditemukan";
 
-hasil.innerHTML = `
-<p>Nomor peserta tidak ditemukan</p>
-`;
+}
+
+}catch(err){
+
+error.innerHTML = "Gagal mengambil data";
+
+console.log(err);
 
 }
 
