@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pengumuman TKA</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.container{
+background:white;
+padding:30px;
+border-radius:20px;
+width:90%;
+max-width:500px;
+}
+
+h1{
+text-align:center;
+color:#1e3a8a;
+}
+
+input{
+width:100%;
+padding:15px;
+margin-top:20px;
+border-radius:10px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:15px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+}
+
+.result{
+margin-top:20px;
+padding:20px;
+background:#f3f4f6;
+border-radius:10px;
+display:none;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Pengumuman Hasil TKA</h1>
+
+<input type="text" id="nomor" placeholder="Masukkan Nomor Peserta">
+
+<button onclick="cek()">Lihat Hasil</button>
+
+<div class="result" id="hasil"></div>
+
+</div>
+
+<script>
+
+const API_URL = "https://script.google.com/macros/s/AKfycbyhYNPw3VhzM-opuetr0AJi6NTLLVozmWdgJO_9ZpEBOKZjUMCB8j485MxfjWqiKTkB/exec";
+
+async function cek(){
+
+const nomor = document.getElementById("nomor").value;
+
+const response = await fetch(`${API_URL}?nomor=${nomor}`);
+
+const data = await response.json();
+
+const hasil = document.getElementById("hasil");
+
+if(data.found){
+
+hasil.style.display = "block";
+
+hasil.innerHTML = `
+<h3>${data.nama}</h3>
+<p>Nomor Peserta: ${data.nomor}</p>
+<p>Nilai Matematika: ${data.matematika}</p>
+<p>Nilai Bahasa Indonesia: ${data.bahasa_indonesia}</p>
+`;
+
+}else{
+
+hasil.style.display = "block";
+
+hasil.innerHTML = `
+<p>Nomor peserta tidak ditemukan</p>
+`;
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
